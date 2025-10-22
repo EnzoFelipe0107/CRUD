@@ -68,11 +68,7 @@
             </div>
         </div>
     </div>
-    <div class="w-100">
-  <img src="https://www.etice.ce.gov.br/wp-content/uploads/sites/5/2023/07/noticia-600x424.png" alt="banner"
-   class="img-fluid w-100" style="opacity: 0.85;">
-</div>
-
+                
 </body>
 
 </html>
