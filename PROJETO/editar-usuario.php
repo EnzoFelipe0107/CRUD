@@ -1,48 +1,46 @@
 <?php
-// Inclua o arquivo assist.php que contém as funções de banco de dados
+// Inclui o arquivo com as funções de CRUD (buscarUsuarioPorId, atualizarUsuario).
 require_once 'assist.php';
 
-// 1. Verificar se um ID de usuário foi fornecido na URL (ex: editar-usuario.php?id=5)
+// 1. Verificar e validar o ID do usuário na URL (GET)
 if (!isset($_GET['id']) || empty($_GET['id'])) {
-    // Se não houver ID, redireciona para a lista de usuários
+    // Redireciona se o ID for inválido ou ausente.
    header("Location: index.php?page=listar");;
     exit();
 }
 
 $id_usuario = $_GET['id'];
 
-// 2. Buscar o usuário pelo ID.
-
+// 2. Busca inicial do usuário no banco de dados.
 $usuario = buscarUsuarioPorId($id_usuario);
 
-// 3. Se o usuário não for encontrado, redireciona para a lista
+// 3. Se a busca falhar, redireciona.
 if (!$usuario) {
     header("Location: index.php?page=listar");;
     exit();
 }
 
-// 4. Se o formulário de edição for submetido (POST), processa a atualização
+// 4. Processamento da Submissão do Formulário (POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['acao'] === 'editar') {
-    // Coleta e sanitiza os dados do formulário
+    // Coleta e sanitiza os dados do formulário.
     $nome = $_POST['nome'] ?? '';
     $email = $_POST['email'] ?? '';
-    $senha = $_POST['senha'] ?? ''; // Você deve tratar a senha com hash, mas mantive o padrão
+    $senha = $_POST['senha'] ?? '';
     $data_nasc = $_POST['data_nasc'] ?? '';
     $cpf = $_POST['cpf'] ?? '';
 
-    // Chamada à função de atualização (Você precisa criar a função 'atualizarUsuario' em assist.php)
+    // Chama a função para executar o UPDATE no banco.
     if (atualizarUsuario($id_usuario, $nome, $email, $senha, $data_nasc, $cpf)) {
-        // Redireciona para a lista com mensagem de sucesso (opcional)
+        // Sucesso: Redireciona com status de sucesso.
         header("Location: ?page=listar&status=success_edit");
         exit();
     } else {
-        // Redireciona com mensagem de erro (opcional)
+        // Falha: Redireciona com status de erro.
         header("Location: ?page=listar&status=error_edit");
         exit();
     }
 }
-// NOTA: A lógica acima é um exemplo de como processar o POST no mesmo arquivo.
-// Alternativamente, você pode apontar o formulário para 'salvar-usuario.php' e adicionar a lógica de 'editar' lá.
+// O código HTML/Bootstrap abaixo é exibido para o usuário (formulário).
 ?>
 <!doctype html>
 <html lang="pt-BR">
@@ -58,16 +56,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['acao'] === 'editar') {
         
         <form action="editar-usuario.php?id=<?= $id_usuario ?>" method="POST">
             <input type="hidden" name="acao" value="editar">
-            <input type="hidden" name="id" value="<?= htmlspecialchars($id_usuario) ?>">
+            <input type="hidden" name="id" value="<?=($id_usuario) ?>">
 
             <div class="form-group mb-3">
                 <label for="nome">Nome</label>
-                <input type="text" id="nome" name="nome" class="form-control" value="<?= htmlspecialchars($usuario['nome'] ?? '') ?>" required>
+                <input type="text" id="nome" name="nome" class="form-control" value="<?=($usuario['nome'] ?? '') ?>" required>
             </div>
 
             <div class="form-group mb-3">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" class="form-control" value="<?= ($usuario['email'] ?? '') ?>" required>
+                <input type="email" id="email" name="email" class="form-control" value="<?=($usuario['email'] ?? '') ?>" required>
             </div>
 
             <div class="form-group mb-3">
@@ -77,12 +75,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['acao'] === 'editar') {
 
             <div class="form-group mb-3">
                 <label for="data_nasc">Data de Nascimento</label>
-                <input type="date" id="data_nasc" name="data_nasc" class="form-control" value="<?= ($usuario['data_nascimento'] ?? '') ?>" required>
+                <input type="date" id="data_nasc" name="data_nasc" class="form-control" value="<?=($usuario['data_nascimento'] ?? '') ?>" required>
             </div>
 
             <div class="form-group mb-3">
                 <label for="cpf">CPF:</label>
-                <input type="text" id="cpf" name="cpf" class="form-control" maxlength="14" value="<?= ($usuario['CPF'] ?? '') ?>">
+                <input type="text" id="cpf" name="cpf" class="form-control" maxlength="14" value="<?=($usuario['CPF'] ?? '') ?>">
             </div>
 
             <div class="mb-3">

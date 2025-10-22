@@ -1,17 +1,16 @@
 <?php
-// Certifique-se de que o arquivo de configuração do banco de dados está incluído
+// Inclui o arquivo de configuração do banco de dados.
 require_once 'config.php';
 
 //
-// 1. FUNÇÃO PARA LISTAR TODOS OS USUÁRIOS
+// 1. FUNÇÃO PARA LISTAR TODOS OS USUÁRIOS (READ)
 //
 /**
- * Busca e retorna todos os usuários cadastrados no banco de dados.
- * @return array|bool Um array de usuários ou false se a busca falhar.
+ * Busca e retorna todos os usuários cadastrados.
  */
 function buscarUsuarios()
 {
-    // Obtém a conexão com o banco de dados
+    // Obtém a conexão com o banco de dados.
     $conn = Conn::getConnection();
     
     try {
@@ -19,51 +18,43 @@ function buscarUsuarios()
         $res = $conn->prepare($sql);
         $res->execute();
         
-        // Retorna todos os resultados como um array associativo
+        // Retorna todos os resultados.
         return $res->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        // Em um ambiente de produção, você deve logar o erro, não exibi-lo.
-        // echo "Erro ao buscar usuários: " . $e->getMessage();
+        // Trata o erro (logar em produção).
         return false;
     }
 }
 
 //
-// 2. FUNÇÃO PARA DELETAR UM USUÁRIO PELO ID
+// 2. FUNÇÃO PARA DELETAR UM USUÁRIO PELO ID (DELETE)
 //
 /**
- * Deleta um usuário do banco de dados com base no ID fornecido.
- * @param int $id O ID do usuário a ser deletado.
+ * Deleta um usuário com base no ID.
  */
 function deletarUsuario($id)
 {
     $conn = Conn::getConnection();
     
-    // Usando try-catch para lidar com erros de banco de dados
     try {
-        // QUERY PARAMETRIZADA: Proteção contra SQL Injection
+        // Query parametrizada (segurança contra SQL Injection).
         $sql = "DELETE FROM usuarios WHERE ID = :id";
         $res = $conn->prepare($sql);
         
-        // Associa o valor com o tipo de dado correto (inteiro)
+        // Associa o ID como inteiro.
         $res->bindValue(':id', $id, PDO::PARAM_INT);
         $res->execute();
 
-        // Verifica se alguma linha foi afetada
+        // Verifica o sucesso da exclusão e exibe feedback.
         if ($res->rowCount() > 0) {
-            // Sucesso na exclusão
             print "<script>alert('Exclusão feita com sucesso!')</script>";
-            // Redirecionamento de volta para a página de listagem
             print "<script>location.href='index.php?page=listar'</script>";
         } else {
-            // ID não encontrado ou erro
             print "<script>alert('Não foi possível executar a exclusão. Usuário não encontrado ou erro.')</script>";
             print "<script>location.href='index.php?page=listar'</script>";
         }
     } catch (PDOException $e) {
-        // Em caso de erro de conexão ou SQL
         print "<script>alert('Erro no banco de dados: Não foi possível executar a exclusão')</script>";
-        // print "Erro: " . $e->getMessage(); // Descomente para debug
         print "<script>location.href='index.php?page=listar'</script>";
     }
 }
@@ -73,9 +64,7 @@ function deletarUsuario($id)
 // 3. FUNÇÃO AUXILIAR PARA A EDIÇÃO (Buscar um único usuário)
 //
 /**
- * Busca e retorna um único usuário pelo seu ID.
- * @param int $id O ID do usuário a ser buscado.
- * @return array|bool Um array associativo com os dados do usuário ou false se não encontrado.
+ * Busca e retorna um único usuário pelo ID.
  */
 function buscarUsuarioPorId($id)
 {
@@ -87,32 +76,24 @@ function buscarUsuarioPorId($id)
         $res->bindValue(':id', $id, PDO::PARAM_INT);
         $res->execute();
         
-        // Retorna a primeira linha encontrada
+        // Retorna a primeira linha encontrada.
         return $res->fetch(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        // echo "Erro ao buscar usuário: " . $e->getMessage();
         return false;
     }
 }
 
 //
-// 4. FUNÇÃO AUXILIAR PARA A EDIÇÃO (Atualizar um usuário)
+// 4. FUNÇÃO AUXILIAR PARA A EDIÇÃO (Atualizar um usuário - UPDATE)
 //
 /**
  * Atualiza os dados de um usuário existente.
- * @param int $id O ID do usuário a ser atualizado.
- * @param string $nome O novo nome.
- * @param string $email O novo email.
- * @param string $senha A nova senha (pode ser vazia).
- * @param string $data_nasc A nova data de nascimento.
- * @param string $cpf O novo CPF.
- * @return bool True em caso de sucesso, false em caso de falha.
  */
 function atualizarUsuario($id, $nome, $email, $senha, $data_nasc, $cpf)
 {
     $conn = Conn::getConnection();
     
-    // Prepara a query SQL de base
+    // Prepara a query SQL de base (sem o campo senha).
     $sql = "UPDATE usuarios SET 
             nome = :nome, 
             email = :email, 
@@ -120,9 +101,10 @@ function atualizarUsuario($id, $nome, $email, $senha, $data_nasc, $cpf)
             CPF = :cpf
             WHERE ID = :id";
 
-    // Adiciona o campo 'senha' à query APENAS se uma nova senha for fornecida
+    // Verifica se o campo 'senha' foi preenchido.
     if (!empty($senha)) {
-      password_hash($senha, PASSWORD_DEFAULT);
+      password_hash($senha, PASSWORD_DEFAULT); // Gera o hash da senha (embora o resultado não seja armazenado na variável $senha).
+        // Usa a query que inclui a atualização da senha.
         $sql = "UPDATE usuarios SET 
                 nome = :nome, 
                 email = :email, 
@@ -135,22 +117,21 @@ function atualizarUsuario($id, $nome, $email, $senha, $data_nasc, $cpf)
     try {
         $res = $conn->prepare($sql);
         
-        // Associa os valores comuns
+        // Associações de valores.
         $res->bindValue(':nome', $nome);
         $res->bindValue(':email', $email);
         $res->bindValue(':data_nasc', $data_nasc);
         $res->bindValue(':cpf', $cpf);
         $res->bindValue(':id', $id, PDO::PARAM_INT);
 
-        // Associa a senha, se houver
+        // Vincula a senha, se necessário.
         if (!empty($senha)) {
             $res->bindValue(':senha', $senha); 
         }
 
-        return $res->execute();
+        return $res->execute(); // Executa a atualização.
 
     } catch (PDOException $e) {
-        // echo "Erro ao atualizar usuário: " . $e->getMessage();
         return false;
     }
 }

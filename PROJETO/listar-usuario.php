@@ -12,25 +12,36 @@
 
 <body>
     <?php
+    // Inclui o arquivo de funções de CRUD (contém buscarUsuarios e deletarUsuario).
     require_once 'assist.php';
 
-    // O código PHP de processamento deve vir antes do HTML principal
+    // --- Lógica de Exclusão (DELETE) ---
+    // Verifica se o formulário de exclusão foi submetido via POST.
     if (isset($_POST["excluir"]) && $_POST["excluir"] !== "") {
-        deletarUsuario($_POST["excluir"]);
-        // Redireciona para evitar re-envio do formulário (Post/Redirect/Get pattern)
+        deletarUsuario($_POST["excluir"]); // Chama a função para deletar o usuário.
+        // Padrão Post/Redirect/Get para evitar re-envio acidental do formulário.
         header("Location: ?page=listar");
         exit();
     }
 
+    // --- Lógica de Leitura (READ) ---
+    // Busca todos os usuários cadastrados.
     $usuarios = buscarUsuarios();
     ?>
 
     <div class="container mt-4">
-        <h1 class="mb-4">Lista de Usuários Cadastrados</h1> <?php if (!isset($usuarios) || empty($usuarios)) { ?>
+        <h1 class="mb-4">Lista de Usuários Cadastrados</h1> 
+        <?php 
+        // Verifica se o array de usuários está vazio.
+        if (!isset($usuarios) || empty($usuarios)) { 
+        ?>
             <div class="alert alert-info" role="alert">
                 Nenhum usuário cadastrado.
             </div>
-        <?php } else { ?>
+        <?php 
+        // Se houver usuários, exibe a tabela.
+        } else { 
+        ?>
 
             <div class="table-responsive">
                 <table class="table table-striped table-hover table-bordered">
@@ -45,19 +56,22 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($usuarios as $l) { ?>
+                        <?php 
+                        // Itera sobre o array de usuários para popular a tabela.
+                        foreach ($usuarios as $l) { 
+                        ?>
                             <tr>
-                                <td> <?= htmlspecialchars($l["nome"] ?? '') ?></td>
-                                <td> <?= htmlspecialchars($l["email"] ?? '') ?></td>
-                                <td> <?= htmlspecialchars($l["senha"] ?? '') ?></td>
-                                <td> <?= htmlspecialchars($l["data_nascimento"] ?? '') ?></td>
-                                <td> <?= htmlspecialchars($l["CPF"] ?? '') ?></td>
+                                <td> <?= ($l["nome"] ?? '') ?></td>
+                                <td> <?= ($l["email"] ?? '') ?></td>
+                                <td> <?= ($l["senha"] ?? '') ?></td>
+                                <td> <?= ($l["data_nascimento"] ?? '') ?></td>
+                                <td> <?= ($l["CPF"] ?? '') ?></td>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <a href="?page=editar&id=<?= htmlspecialchars($l['id'] ?? '') ?>" class="btn btn-warning btn-sm mr-2">Editar</a>
+                                        <a href="?page=editar&id=<?= ($l['id'] ?? '') ?>" class="btn btn-warning btn-sm mr-2">Editar</a>
                                         
                                         <form action="?page=listar" method="post" onsubmit="return confirm('Tem certeza que deseja excluir este usuário?');" style="display:inline;">
-                                            <input type="hidden" name="excluir" value="<?= htmlspecialchars($l['id'] ?? '') ?>">
+                                            <input type="hidden" name="excluir" value="<?= ($l['id'] ?? '') ?>">
                                             <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
                                         </form>
                                     </div>
@@ -70,7 +84,7 @@
         <?php } ?>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUadn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE2T0t7E4kYkIHFek-u8W1Cyfvcw7u" crossorigin="anonymous"></script>
 </body>
 

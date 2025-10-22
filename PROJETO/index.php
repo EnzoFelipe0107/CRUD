@@ -5,10 +5,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Css bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
     <title>CRUD</title>
+
+
 </head>
 
 <body>
@@ -35,22 +36,31 @@
         <div class="row">
             <div class="col mt- 5">
                 <?php
+                // Inclui o arquivo de configuração (conexão).
                 include("config.php");
+
+                // --- Lógica de Roteamento (Switch/Case) ---
+                // Verifica o parâmetro 'page' na URL (GET) para incluir o arquivo correto.
                 switch (@$_REQUEST["page"]) {
 
                     case "novo":
+                        // Rota: Formulário de criação.
                         include("novo-usuario.php");
                         break;
                     case "listar":
+                        // Rota: Tabela de listagem (READ).
                         include("listar-usuario.php");
                         break;
                     case "salvar";
+                        // Rota: Processamento de INSERT/DELETE/etc.
                         include("salvar-usuario.php");
                         break;
                     case "editar":
+                        // Rota: Formulário de edição/update.
                         include("editar-usuario.php");
                         break;
                     default:
+                        // Rota Padrão (Home).
                         print "<h1>Bem vindo!</h1>";
                         print "<h2> Acesse a Navbar acima para interagir com nosso banco de dados! </h2>";
                 }
@@ -58,6 +68,10 @@
             </div>
         </div>
     </div>
+    <div class="w-100">
+  <img src="https://www.etice.ce.gov.br/wp-content/uploads/sites/5/2023/07/noticia-600x424.png" alt="banner"
+   class="img-fluid w-100" style="opacity: 0.85;">
+</div>
 
 </body>
 
