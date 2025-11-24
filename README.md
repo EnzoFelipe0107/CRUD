@@ -1,6 +1,6 @@
-# CRUD Jornal OPOVO
+# CRUD 
 
-O projeto foi criado, para o processo seletivo do Jornal OPOVO, em que criei um CRUD utilizando PHP, MYSQL, HTML, CSS, JS
+O Projeto consiste em um CRUD utilizando PHP, MYSQL, HTML, CSS, JS
 para facilitar a manipulação e o controle de dados podendo excluir, editar e incluir usuários
 
 ## 🛠️ Tecnologias Utilizadas
